@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>function-target</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <!-- 1. Define some markup -->
+    <button onclick="copyUrlToClipboard('百度','https://www.baidu.com/')">Copy</button>
+	
+    <!-- 2. Include library -->
+    <script src="clipboard.min.js"></script>
+
+    <!-- 3. Instantiate clipboard -->
+    <script>
+	
+        /**
+         * 复制超链接到粘贴板
+         * @param
+         *    showUrlName 超链接名称
+         *    url  超链接地址
+         */
+	function copyUrlToClipboard(showUrlName,url) {
+		var copyFrom, agent, body;
+
+                    //创建超链接<a id="target" herf=url target="_blank">showUrlName</a>
+                    copyFrom = document.createElement("a");
+                    copyFrom.setAttribute("id", "target");
+                    copyFrom.setAttribute("target", "_blank");
+                    copyFrom.setAttribute("href", url);
+                    copyFrom.innerHTML = showUrlName;
+                    //创建按钮
+                    agent = document.createElement("button");
+                    //获取body
+                    body = document.getElementsByTagName('body')[0];
+                    //body增加超链接
+                    body.appendChild(copyFrom);
+                    //body增加按钮
+                    body.appendChild(agent);　　 // 采用Clipboard.js方案 // trouble：没有可以传入的HTML元素，但我们可以动态创建一个DOM对象作为代理，复制超链接
+                    var clipboard = new ClipboardJS(agent, {
+                        target: function() {
+                            return document.querySelector('#target');
+                        }
+                    });
+
+                    clipboard.on('success', function(e) {
+                        alert("复制成功");
+                    });
+
+                    clipboard.on('error', function(e) {
+                        alert("复制失败");
+                    });
+                    //点击按钮
+                    agent.click();
+                    // copyFrom.focus();
+                    // copyFrom.select();  // 问题所在 无法对copyFrom对象使用select()方法
+                    // document.execCommand('copy'); // copy动态创建的<a>失败
+                    //移除创建的元素 
+                    body.removeChild(copyFrom);
+                    body.removeChild(agent);
+	}
+    </script>
+</body>
+</html>
